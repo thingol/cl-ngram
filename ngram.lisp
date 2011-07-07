@@ -11,29 +11,32 @@ N defaults to 2."
 		 (make-string (1- n) :initial-element #\$)
 		 string
 		 (make-string (1- n) :initial-element #\$)))
+
+  (defun chop-string (string)
+    (let ((s (pad string n))
+	  (grams nil))
+      (dotimes (i (- (length s) (1- n)))
+	(setf grams (append grams (list (subseq s i (+ i n))))))
+      grams))
+	    
   
   (defun iter (strings n-grams)
     "Iterates over the list of strings to produce the grams."
 
     (if strings
-	(progn
-	  (let ((string (pad (car strings) n))
-		(grams nil))
-
-	    (dotimes (i (- (length string) (1- n)))
-	      (setf grams (append grams (list (subseq string i (+ i n))))))
-
-	    (iter (cdr strings) (append n-grams (list grams)))))
+	(iter (cdr strings) (append n-grams (chop-string (car strings))))
 	n-grams))
 
-  (iter strings nil))
+  (if (listp strings)
+      (iter strings nil)
+      (chop-string strings)))
 
 (defun compare-strings (string1 string2 &optional (warp 1.0) (n 2))
   "Compare two strings and return a score between 0 and 1."
 
-  (compare-n-grams (car (gen-n-grams string1 n)) (car (gen-n-grams string2 n) warp n)))
+  (compare-n-grams (gen-n-grams string1 n) (gen-n-grams string2 n) warp))
 
-(defun compare-n-grams (g1 g2 &optional (warp 1.0) (n 2))
+(defun compare-n-grams (g1 g2 &optional (warp 1.0))
   "Compare two sets of n-grams and return a score between 0 and 1."
 
   (defun compare-members (list1 list2)
@@ -44,14 +47,16 @@ N defaults to 2."
 	     
 	     (dolist (e list1)
 	       (when (member e list2 :test #'equal) 
-		 (setf same (1+ same)))
-	       (setf all (1+ all)))
+		 (setf shared (1+ shared))
+		 (setf list2 (remove e list2 :test #'equal :count 1))
+		 (setf list1 (remove e list1 :test #'equal :count 1)))
+	       (setf total (1+ total)))
 	     
 	     (dolist (e list2)
 	       (when (not (member e list1 :test #'equal))
-		 (setf all (1+ all))))
+		 (setf total (1+ total))))
 	     
-	     (cons same all)))
+	     (cons shared total)))
 
   (let* ((gram-stats (compare-members g1 g2))
 	 (shared (car gram-stats))
@@ -62,5 +67,3 @@ N defaults to 2."
 	(float (/ (- (* total warp)
 		     (* (- total shared) warp))
 		     (* total warp))))))
-		
-   
