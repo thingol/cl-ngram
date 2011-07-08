@@ -41,22 +41,17 @@ N defaults to 2."
 
   (defun compare-members (list1 list2)
     "How many grams are shared, and how many are there in total?"
-    
-	   (let ((shared 0)
-		 (total 0))
-	     
-	     (dolist (e list1)
-	       (when (member e list2 :test #'equal) 
-		 (setf shared (1+ shared))
-		 (setf list2 (remove e list2 :test #'equal :count 1))
-		 (setf list1 (remove e list1 :test #'equal :count 1)))
-	       (setf total (1+ total)))
-	     
-	     (dolist (e list2)
-	       (when (not (member e list1 :test #'equal))
-		 (setf total (1+ total))))
-	     
-	     (cons shared total)))
+
+    (defun iter (list1 shared)
+      (if list1
+	  (progn
+	    (when (member (car list1) list2 :test #'equal)
+	      (setf list2 (remove  (car list1) list2 :test #'equal :count 1))
+	      (setf shared (1+ shared)))
+	    (iter (cdr list1) shared))
+	  shared))
+
+    (cons (iter list1 0) (+ (list-length list1) (list-length list2))))
 
   (let* ((gram-stats (compare-members g1 g2))
 	 (shared (car gram-stats))
