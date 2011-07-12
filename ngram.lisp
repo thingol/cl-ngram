@@ -1,3 +1,8 @@
+;;; -*- Lisp -*-
+;;;
+;;; This code is based on the python-gram module
+;;;
+
 (in-package :org.kjerkreit.ngram)
 
 (defun gen-n-grams (strings &optional (n 2))
