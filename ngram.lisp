@@ -29,7 +29,7 @@ N defaults to 2."
     "Iterates over the list of strings to produce the grams."
 
     (if strings
-	(iter (cdr strings) (append n-grams (chop-string (car strings))))
+	(iter (cdr strings) (append n-grams (list (chop-string (car strings)))))
 	n-grams))
 
   (if (listp strings)
