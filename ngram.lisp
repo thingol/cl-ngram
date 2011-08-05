@@ -9,33 +9,29 @@
   "Generates a list containing n-grams (as lists) based on a list of strings.
 N defaults to 2."
 
-  (labels ((pad (string n)
-	     "Pads the strings before processing."
+  (flet ((pad (string n)
+	   "Pads the strings before processing."
+	   	     
+	   (concatenate 'string
+			(make-string (1- n) :initial-element #\$)
+			string
+			(make-string (1- n) :initial-element #\$)))
+
+	 (chop-string (string)
+	   "Divides a string into grams."
+
+	   (let ((s (pad string n))
+		 (grams nil))
 	     
-	     (concatenate 'string
-			  (make-string (1- n) :initial-element #\$)
-			  string
-			  (make-string (1- n) :initial-element #\$)))
-
-	   (chop-string (string)
-	     "Divides a string into grams."
-
-	     (let ((s (pad string n))
-		   (grams nil))
-	       (dotimes (i (- (length s) (1- n)))
-		 (setf grams (append grams (list (subseq s i (+ i n))))))
-	       grams))
-
-	   (iter (strings n-grams)
-	     "Iterates over the list of strings to produce the lists of grams."
-
-	     (if strings
-		 (iter (cdr strings) (append n-grams
-					     (list (chop-string (car strings)))))
-		 n-grams)))
-    
+	     (dotimes (i (- (length s) (1- n)))
+	       (setf grams (append grams (list (subseq s i (+ i n))))))
+	     
+	     grams)))
+    	 
     (if (listp strings)
-	(iter strings nil)
+	(do ((ngrams nil (append ngrams (list (chop-string (car s)))))
+	     (s strings (cdr s)))
+	    ((not strings) ngrams))
 	(chop-string strings))))
 
 (defun compare-strings (string1 string2 &optional (warp 1.0) (n 2))
@@ -47,17 +43,18 @@ N defaults to 2."
   "Compare two sets of n-grams and return a score between 0 and 1."
 
   (flet ((compare-members (list1 list2)
-	     "How many grams are shared, and how many are there in total?"
+	   "How many grams are shared, and how many are there in total?"
 
-	     (labels ((iter (list1 shared)
-		      (if list1
-			  (progn
-			    (when (member (car list1) list2 :test #'equal)
-			      (setf list2 (remove  (car list1) list2 :test #'equal :count 1))
-			      (setf shared (1+ shared)))
-			    (iter (cdr list1) shared))
-			  shared)))
-	       (cons (iter list1 0) (+ (list-length list1) (list-length list2))))))
+	   (do ((shared 0)
+		(l list1 (cdr l)))
+	       
+	       ((not l)
+		(cons shared (+ (list-length list1)
+				(list-length list2))))
+	     
+	     (when (member (car l) list2 :test #'equal)
+	       (setf list2 (remove  (car l) list2 :test #'equal :count 1))
+	       (setf shared (1+ shared))))))
     
     (let* ((gram-stats (compare-members g1 g2))
 	   (shared (car gram-stats))
