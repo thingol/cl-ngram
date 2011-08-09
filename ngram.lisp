@@ -22,18 +22,14 @@ N defaults to 2."
 
 	       (dotimes (i (- (length s) (1- n)))
 		 (setf grams (append grams (list (subseq s i (+ i n))))))
-	       grams))
 
-	   (iter (strings n-grams)
-	     "Iterates over the list of strings to produce the lists of grams."
+	       grams)))
 
-	     (if strings
-		 (iter (cdr strings) (append n-grams
-					     (list (chop-string (car strings)))))
-		 n-grams)))
-    
     (if (listp strings)
-	(iter strings nil)
+	(progn
+	  (let ((n-grams))
+	    (dolist (string strings)
+	      (setf n-grams (append n-grams (list (chop-string string)))))))
 	(chop-string strings))))
 
 (defun compare-strings (string1 string2 &optional (warp 1.0) (n 2))
@@ -47,15 +43,13 @@ N defaults to 2."
   (flet ((compare-members (list1 list2)
 	     "How many grams are shared, and how many are there in total?"
 
-	     (labels ((iter (list1 shared)
-		      (if list1
-			  (progn
-			    (when (member (car list1) list2 :test #'equal)
-			      (setf list2 (remove  (car list1) list2 :test #'equal :count 1))
-			      (setf shared (1+ shared)))
-			    (iter (cdr list1) shared))
-			  shared)))
-	       (cons (iter list1 0) (+ (list-length list1) (list-length list2))))))
+	     (let ((shared 0))
+	       (dolist (gram list1)
+		 (when (member gram list2 :test #'equal)
+		   (setf list2 (remove gram list2 :test #'equal :count 1))
+		   (incf shared)))
+
+	       (cons shared (+ (list-length list1) (list-length list2))))))
     
     (let* ((gram-stats (compare-members g1 g2))
 	   (shared (car gram-stats))
