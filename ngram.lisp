@@ -9,7 +9,7 @@
   "Generates a list containing n-grams (as lists) based on a list of strings.
 N defaults to 2."
 
-  (flet ((pad (string n)
+  (labels ((pad (string n)
 	   "Pads the strings before processing."
 	   	     
 	   (concatenate 'string
