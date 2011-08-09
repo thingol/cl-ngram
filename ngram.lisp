@@ -10,20 +10,19 @@
 N defaults to 2."
 
   (labels ((pad (string n)
-	     "Pads the strings before processing."
-	     
 	     (concatenate 'string
 			  (make-string (1- n) :initial-element #\$)
 			  string
 			  (make-string (1- n) :initial-element #\$)))
-
 	   (chop-string (string)
 	     "Divides a string into grams."
 
 	     (let ((s (pad string n))
 		   (grams nil))
+
 	       (dotimes (i (- (length s) (1- n)))
 		 (setf grams (append grams (list (subseq s i (+ i n))))))
+
 	       grams)))
 
     (if (listp strings)
