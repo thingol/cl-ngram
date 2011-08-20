@@ -5,7 +5,7 @@
 
 (in-package :org.kjerkreit.ngram)
 
-;;(declaim (optimize (speed 3) (safety 0)))
+(declaim (optimize (speed 3) (safety 0)))
 
 (defun gen-n-grams (strings &optional (n 2))
   "Generates a list containing n-grams (as lists) based on a list of strings.
@@ -48,7 +48,7 @@ N defaults to 2."
 
 (defun compare-n-grams (g1 g2 &optional (warp 1d0))
   "Compare two sets of n-grams and return a score between 0 and 1."
-  (declare (ftype (function (list list double-float) float) compare-n-grams))
+  (declare (ftype (function (list list double-float) double-float) compare-n-grams))
   (declare (double-float warp))
 
   (flet ((compare-members (list1 list2)
@@ -59,11 +59,12 @@ N defaults to 2."
 	     (let ((shared 0))
 	       (declare (fixnum shared))
 	       (dolist (gram list1)
-		 (when (member gram list2 :test #'equal)
-		   (setf list2 (the list (remove gram list2 :test #'equal :count 1)))
+		 (declare (string gram))
+		 (when (member (the string gram) (the list list2) :test #'string=)
+		   (setf list2 (the list (remove (the string gram) (the list list2) :test #'string= :count 1)))
 		   (incf shared)))
 
-	       (cons shared (+ (list-length list1) (list-length list2))))))
+	       (cons shared (the fixnum (+ (list-length list1) (list-length list2)))))))
 
     (declare (ftype (function (list list) cons) compare-members))
     
@@ -76,6 +77,6 @@ N defaults to 2."
 
       (if (< (abs (- warp 1.0)) 1e-9)
 	  (/ (float shared) total)
-	  (/ (- (* total warp)
-		(* (- total shared) warp))
-	     (* total warp))))))
+	  (the double-float (/ (- (the double-float (* total warp))
+		(the double-float (* (- total shared) warp)))
+	     (the double-float (* total warp))))))))
