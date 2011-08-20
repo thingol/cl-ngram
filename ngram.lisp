@@ -26,10 +26,9 @@ N defaults to 2."
 	       grams)))
 
     (if (listp strings)
-	(progn
-	  (let ((n-grams))
-	    (dolist (string strings)
-	      (setf n-grams (append n-grams (list (chop-string string)))))))
+	(let ((n-grams))
+	  (dolist (string strings)
+	    (setf n-grams (append n-grams (list (chop-string string))))))
 	(chop-string strings))))
 
 (defun compare-strings (string1 string2 &optional (warp 1.0) (n 2))
@@ -45,8 +44,8 @@ N defaults to 2."
 
 	     (let ((shared 0))
 	       (dolist (gram list1)
-		 (when (member gram list2 :test #'equal)
-		   (setf list2 (remove gram list2 :test #'equal :count 1))
+		 (when (member gram list2 :test #'string=)
+		   (setf list2 (remove gram list2 :test #'string=l :count 1))
 		   (incf shared)))
 
 	       (cons shared (+ (list-length list1) (list-length list2))))))
@@ -57,6 +56,6 @@ N defaults to 2."
 
       (if (< (abs (- warp 1.0)) 1e-9)
 	  (float (/ shared total))
-	  (float (/ (- (* total warp)
-		       (* (- total shared) warp))
-		    (* total warp)))))))
+	  (/ (- (* total warp)
+		(* (- total shared) warp))
+	     (* total warp))))))
