@@ -45,7 +45,7 @@ N defaults to 2."
 	     (let ((shared 0))
 	       (dolist (gram list1)
 		 (when (member gram list2 :test #'string=)
-		   (setf list2 (remove gram list2 :test #'string=l :count 1))
+		   (setf list2 (remove gram list2 :test #'string= :count 1))
 		   (incf shared)))
 
 	       (cons shared (+ (list-length list1) (list-length list2))))))
