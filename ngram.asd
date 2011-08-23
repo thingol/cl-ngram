@@ -8,7 +8,7 @@
 (in-package :org.kjerkreit.ngram-system)
 
 (defsystem org.kjerkreit.ngram
-  :version "0.0.1"
+  :version "0.0.2"
   :author "Marius Hårstad Kjerkreit"
   :license "BSD-style"
   :components ((:static-file "LICENSE")
