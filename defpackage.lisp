@@ -1,6 +1,6 @@
 (in-package :cl-user)
 
-(defpackage :org.kjerkreit.ngram
+(defpackage :org.kjerkreit.utils.ngram
   (:nicknames "ngram")
   (:use :common-lisp)
   (:export gen-n-grams

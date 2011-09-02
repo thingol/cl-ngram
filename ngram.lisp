@@ -3,7 +3,7 @@
 ;;; This code is based on the python-gram module
 ;;;
 
-(in-package :org.kjerkreit.ngram)
+(in-package :org.kjerkreit.utils.ngram)
 
 (defun gen-n-grams (strings &optional (n 2))
   "Generates a list containing n-grams (as lists) based on a list of strings.
