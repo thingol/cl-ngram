@@ -5,16 +5,24 @@
 
 (in-package :org.kjerkreit.utils.ngram)
 
+(declaim (ftype (function (list &optional fixnum) list) gen-n-grams)
+	 (ftype (function (string string &optional float fixnum) float) compare-strings)
+	 (ftype (function (list list &optional float) float) compare-n-grams))
+
 (defun gen-n-grams (strings &optional (n 2))
   "Generates a list containing n-grams (as lists) based on a list of strings.
 N defaults to 2."
 
   (labels ((pad (string n)
+	     (declare (ftype (function (string fixnum) string) pad))
+     	     "Pads a string with n $."
+	     
 	     (concatenate 'string
 			  (make-string (1- n) :initial-element #\$)
 			  string
 			  (make-string (1- n) :initial-element #\$)))
 	   (chop-string (string)
+	     (declare (ftype (function (string) list) chop-string))
 	     "Divides a string into grams."
 
 	     (let ((s (pad string n))
@@ -25,21 +33,22 @@ N defaults to 2."
 
 	       grams)))
 
-    (if (listp strings)
-	(let ((n-grams))
-	  (dolist (string strings)
-	    (setf n-grams (append n-grams (list (chop-string string))))))
-	(chop-string strings))))
+    (let ((n-grams))
+      (dolist (s strings)
+	(setf n-grams (append n-grams (list (chop-string s)))))
+      n-grams)))
 
 (defun compare-strings (string1 string2 &optional (warp 1.0) (n 2))
   "Compare two strings and return a score between 0 and 1."
 
-  (compare-n-grams (gen-n-grams string1 n) (gen-n-grams string2 n) warp))
+  (compare-n-grams (car (gen-n-grams (list string1) n)) (car (gen-n-grams (list string2) n)) warp))
 
 (defun compare-n-grams (g1 g2 &optional (warp 1.0))
   "Compare two sets of n-grams and return a score between 0 and 1."
 
-  (flet ((compare-members (list1 list2)
+    
+  (labels ((compare-members (list1 list2)
+	     (declare (ftype (function (list list) cons) compare-members))
 	     "How many grams are shared, and how many are there in total?"
 
 	     (let ((shared 0))
