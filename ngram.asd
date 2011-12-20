@@ -1,11 +1,6 @@
 ;;; -*- Lisp -*-
 
-(in-package :cl-user)
-
-(defpackage #:org.kjerkreit.utils.ngram-system
-  (:use #:asdf #:cl))
-
-(in-package :org.kjerkreit.utils.ngram-system)
+(in-package #:asdf)
 
 (defsystem org.kjerkreit.utils.ngram
   :version "0.0.4"
