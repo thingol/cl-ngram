@@ -11,11 +11,10 @@
 
 (defun gen-n-grams (strings &optional (n 2))
   "Generates a list containing n-grams (as lists) based on a list of strings.
-N defaults to 2."
+N defaults to 2. Strings are padded with (n-1) dollar signs ($)."
 
   (labels ((pad (string n)
 	     (declare (ftype (function (string fixnum) string) pad))
-     	     "Pads a string with n $."
 	     
 	     (concatenate 'string
 			  (make-string (1- n) :initial-element #\$)
@@ -45,8 +44,7 @@ N defaults to 2."
 
 (defun compare-n-grams (g1 g2 &optional (warp 1.0))
   "Compare two sets of n-grams and return a score between 0 and 1."
-
-    
+  
   (labels ((compare-members (list1 list2)
 	     (declare (ftype (function (list list) cons) compare-members))
 	     "How many grams are shared, and how many are there in total?"

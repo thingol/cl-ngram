@@ -3,7 +3,7 @@
 (in-package #:asdf)
 
 (defsystem org.kjerkreit.utils.ngram
-  :version "0.0.4"
+  :version "0.0.4-2"
   :author "Marius Hårstad Kjerkreit"
   :license "BSD-style"
   :components ((:static-file "LICENSE")
