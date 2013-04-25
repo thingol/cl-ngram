@@ -5,7 +5,7 @@
 
 (in-package :org.kjerkreit.utils.ngram)
 
-(declaim (ftype (function (list &optional fixnum) list) gen-n-grams)
+(declaim (ftype (function (t &optional fixnum) list) gen-n-grams)
 	 (ftype (function (string string &optional float fixnum) float) compare-strings)
 	 (ftype (function (list list &optional float) float) compare-n-grams))
 
